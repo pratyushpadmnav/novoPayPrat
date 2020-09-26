@@ -34,6 +34,9 @@ public class Transaction {
 	@Column(name = "TIMEOFTRANSACTION", columnDefinition =  "TIMESTAMP", nullable = false, updatable = false)
 	private LocalDateTime timeOfTransaction;
 	
+	@Column(name = "SENDERWALLETID", nullable = true, updatable = false)
+	private UUID sendorWalletID;
+	
 	@Column(name = "TRANSACTIONCHARGE", precision = 15, scale = 4, nullable = false, updatable = false)
 	private BigDecimal charge;
 	
@@ -129,6 +132,19 @@ public class Transaction {
 
 	public void setCommision(BigDecimal commision) {
 		this.commision = commision;
+	}
+	
+	
+
+
+	public UUID getSendorWalletID() {
+		return sendorWalletID;
+	}
+
+
+
+	public void setSendorWalletID(UUID sendorWalletID) {
+		this.sendorWalletID = sendorWalletID;
 	}
 
 
