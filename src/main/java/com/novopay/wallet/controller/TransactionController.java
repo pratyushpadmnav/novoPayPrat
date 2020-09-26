@@ -1,5 +1,7 @@
 package com.novopay.wallet.controller;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import javax.validation.Valid;
@@ -17,6 +19,7 @@ import com.novopay.wallet.Exceptions.InsuffecientFundsException;
 import com.novopay.wallet.Exceptions.TransactionNotFound;
 import com.novopay.wallet.Exceptions.UserNotFoundException;
 import com.novopay.wallet.Exceptions.WalletInvalid;
+import com.novopay.wallet.model.Transaction;
 import com.novopay.wallet.payload.TransactionPayLoad;
 import com.novopay.wallet.payload.UserSignUpPayLoad;
 import com.novopay.wallet.service.TransactionService;
@@ -34,14 +37,15 @@ public class TransactionController {
 	public UserLoginService userLoginService;
 	
 	@Autowired
-	TransactionController(TransactionService transactionService)
+	TransactionController(TransactionService transactionService,UserLoginService userLoginService)
 	{
 		this.transactionService = transactionService;
+		this.userLoginService =userLoginService;
 	} 
 	
 	
 	@RequestMapping(value = "/addMoney", method = RequestMethod.POST)
-	public void addMoney(@RequestParam("email") String email, @RequestParam("pwd") String password,
+	public String addMoney(@RequestParam("email") String email, @RequestParam("pwd") String password,
 			@Valid @RequestBody TransactionPayLoad transactionPayload) {
 		if (userLoginService.checkLogin(email, password)) {
 			try {
@@ -53,10 +57,11 @@ public class TransactionController {
 		} else {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid login Credentials");
 		}
+		return transactionService.SUCCESS;
 	}
 	
 	@RequestMapping(value = "/transfer", method = RequestMethod.POST)
-	public void addMoneyToWallet(@RequestParam("email") String email, @RequestParam("pwd") String password,
+	public String addMoneyToWallet(@RequestParam("email") String email, @RequestParam("pwd") String password,
 			@Valid @RequestBody TransactionPayLoad transactionPayload) {
 		if (userLoginService.checkLogin(email, password)) {
 			try {
@@ -72,6 +77,7 @@ public class TransactionController {
 		} else {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password invalid.");
 		}
+		return transactionService.SUCCESS;
 	}
 	
 	@RequestMapping(value = "/chargeandcommission", method = RequestMethod.POST)
@@ -110,7 +116,7 @@ public class TransactionController {
 	}
 	
 	@RequestMapping(value="/reverseTransaction" , method = RequestMethod.POST)
-	public void reverseTransaction(@RequestParam("email") String email,@RequestParam("pwd") String password, @RequestParam("transactionId") String transactionId) throws WalletInvalid, InsuffecientFundsException
+	public String reverseTransaction(@RequestParam("email") String email,@RequestParam("pwd") String password, @RequestParam("transactionId") String transactionId) throws WalletInvalid, InsuffecientFundsException
 	{
 		
 		UUID id;
@@ -137,6 +143,27 @@ public class TransactionController {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password invalid.");
 		}
 		
+		return transactionService.SUCCESS;
+	}
+	
+	@RequestMapping(value="/viewPassBook" , method = RequestMethod.POST)
+	public List<Transaction> reverseTransaction(@RequestParam("email") String email,@RequestParam("pwd") String password) throws WalletInvalid, InsuffecientFundsException
+	{
 		
+		List<Transaction> passBook = new ArrayList<Transaction>();
+		if (userLoginService.checkLogin(email, password)) {
+			try {
+				passBook = transactionService.viewPassBook(email);
+			}
+			catch(UserNotFoundException e)
+			{
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found", e);
+			}
+			
+		} else {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password invalid.");
+		}
+		
+		return passBook;
 	}
 }

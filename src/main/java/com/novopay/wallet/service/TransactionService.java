@@ -2,11 +2,13 @@ package com.novopay.wallet.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.novopay.wallet.Exceptions.InsuffecientFundsException;
@@ -100,6 +102,17 @@ public class TransactionService {
 			
 			
 			
+		}
+		
+		public List<Transaction> viewPassBook(String email) throws UserNotFoundException
+		{
+			UserAccount userAccount = loginRepository.findByEmail(email).orElse(null);
+			if(userAccount == null)
+			{
+				throw new UserNotFoundException("User Not Found");
+			}
+			List<Transaction> passBook = transactionRepository.findAllByWalletId(userAccount.getWallet().getWalletId(),Sort.by(Sort.Direction.DESC, "timeOfTransaction"));
+			return passBook;
 		}
 		
 		private boolean transferToWallet(Wallet senderWallet, Wallet recipientWallet, BigDecimal amount) throws WalletInvalid ,InsuffecientFundsException {
