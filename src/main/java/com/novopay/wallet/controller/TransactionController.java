@@ -20,6 +20,8 @@ import com.novopay.wallet.Exceptions.TransactionNotFound;
 import com.novopay.wallet.Exceptions.UserNotFoundException;
 import com.novopay.wallet.Exceptions.WalletInvalid;
 import com.novopay.wallet.model.Transaction;
+import com.novopay.wallet.payload.Passbook;
+import com.novopay.wallet.payload.PassbookPayload;
 import com.novopay.wallet.payload.TransactionPayLoad;
 import com.novopay.wallet.payload.UserSignUpPayLoad;
 import com.novopay.wallet.service.TransactionService;
@@ -83,7 +85,7 @@ public class TransactionController {
 	@RequestMapping(value = "/chargeandcommission", method = RequestMethod.POST)
 	public String computeCommisionandCharges(@RequestParam("amount") BigDecimal amount)
 	{
-		 String commissionAndCharges = "Charge : "+transactionService.calculateCharge(amount)+" Commission: "+transactionService.calculateCommission(amount);
+		 String commissionAndCharges = "Charge : "+transactionService.calculateCharge(amount).setScale(4, BigDecimal.ROUND_HALF_UP)+" Commission: "+transactionService.calculateCommission(amount).setScale(4, BigDecimal.ROUND_HALF_UP);
 		 return commissionAndCharges;
 	}
 	
@@ -147,13 +149,13 @@ public class TransactionController {
 	}
 	
 	@RequestMapping(value="/viewPassBook" , method = RequestMethod.POST)
-	public List<Transaction> reverseTransaction(@RequestParam("email") String email,@RequestParam("pwd") String password) throws WalletInvalid, InsuffecientFundsException
+	public Passbook viewPassBook(@RequestParam("email") String email,@RequestParam("pwd") String password) throws WalletInvalid, InsuffecientFundsException
 	{
 		
-		List<Transaction> passBook = new ArrayList<Transaction>();
+		Passbook passbook = new Passbook();
 		if (userLoginService.checkLogin(email, password)) {
 			try {
-				passBook = transactionService.viewPassBook(email);
+				passbook = transactionService.viewPassBook(email);
 			}
 			catch(UserNotFoundException e)
 			{
@@ -164,6 +166,6 @@ public class TransactionController {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password invalid.");
 		}
 		
-		return passBook;
+		return passbook;
 	}
 }

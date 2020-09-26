@@ -2,6 +2,9 @@ package com.novopay.wallet.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +22,8 @@ import com.novopay.wallet.model.Transaction;
 import com.novopay.wallet.model.UserAccount;
 import com.novopay.wallet.model.UserLoginCredential;
 import com.novopay.wallet.model.Wallet;
+import com.novopay.wallet.payload.Passbook;
+import com.novopay.wallet.payload.PassbookPayload;
 import com.novopay.wallet.payload.TransactionPayLoad;
 import com.novopay.wallet.payload.UserSignUpPayLoad;
 import com.novopay.wallet.repository.LoginDetailRepository;
@@ -31,8 +36,8 @@ public class TransactionService {
 	
 	
 	public static final String CREDIT ="credit";
-	public static final String DEBIT ="credit";
-	public static final String SUCCESS ="credit";
+	public static final String DEBIT ="debit";
+	public static final String SUCCESS ="Sucess";
 	
 	private static final BigDecimal charge = new BigDecimal(0.2);
 	private static final BigDecimal commission = new BigDecimal(0.05);
@@ -91,28 +96,50 @@ public class TransactionService {
 			{
 				throw new TransactionNotFound("Transaction not found.");
 			}
-			Wallet senderWallet = transaction.getWallet();
+			Wallet senderWallet  = transaction.getWallet();
 			Wallet recipientWallet = walletRepository.findById(transaction.getSendorWalletID()).orElse(null);
 			if(recipientWallet == null) {
 				throw new WalletInvalid("Wallet missing");
 			}
-			deductFromWallet(senderWallet, recipientWallet, transaction.getAmount(),true);
+			deductFromWallet(recipientWallet,senderWallet, transaction.getAmount(),true);
 			
-			addToWallet(recipientWallet, senderWallet, transaction.getAmount());
+			addToWallet(senderWallet, recipientWallet, transaction.getAmount());
 			
 			
 			
 		}
 		
-		public List<Transaction> viewPassBook(String email) throws UserNotFoundException
+		public Passbook viewPassBook(String email) throws UserNotFoundException, WalletInvalid
 		{
 			UserAccount userAccount = loginRepository.findByEmail(email).orElse(null);
 			if(userAccount == null)
 			{
 				throw new UserNotFoundException("User Not Found");
 			}
-			List<Transaction> passBook = transactionRepository.findAllByWallet(userAccount.getWallet(),Sort.by(Sort.Direction.DESC, "timeOfTransaction"));
-			return passBook;
+			//List<Transaction> passBook = transactionRepository.findAllByWallet(userAccount.getWallet(),Sort.by(Sort.Direction.DESC, "timeOfTransaction"));
+			 Wallet wallet =userAccount.getWallet();
+			 if(null == wallet)
+				 throw new WalletInvalid("wallet not found");
+			 List<Transaction> transactions = wallet.getTransactions();
+			 List<PassbookPayload> passBookList = new ArrayList<PassbookPayload>();
+			 for(Transaction itr:transactions)
+			 {
+				 PassbookPayload tmp = new PassbookPayload();
+				 tmp.setDateOftransaction(itr.getTimeOfTransaction());
+				 tmp.setTransactionAmount(itr.getAmount());
+				 tmp.setTransactionId(itr.getId());
+				 tmp.setTransactionStatus(itr.getStatus());
+				 tmp.setTransactionType(itr.getType());
+				 passBookList.add(tmp);
+				 
+				 
+			 }
+			 Collections.sort(passBookList);
+			 Passbook passbook = new Passbook();
+			 passbook.setAmount(wallet.getBalance());
+			 passbook.setTransactionList(passBookList);
+			 
+			return passbook;
 		}
 		
 		private boolean transferToWallet(Wallet senderWallet, Wallet recipientWallet, BigDecimal amount) throws WalletInvalid ,InsuffecientFundsException {

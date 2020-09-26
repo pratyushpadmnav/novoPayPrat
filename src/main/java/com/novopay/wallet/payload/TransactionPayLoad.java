@@ -17,7 +17,7 @@ public class TransactionPayLoad {
 	@Digits(integer= 15,fraction=5)
 	private BigDecimal amount;
 	
-	@NotNull
+	
 	@Length(min = 1, max = 254)
 	private String recipientEmail;
 
