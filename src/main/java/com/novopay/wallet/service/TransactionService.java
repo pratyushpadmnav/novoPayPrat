@@ -81,12 +81,33 @@ public class TransactionService {
 			return transaction.getStatus();
 		}
 		
+		public void RevertTransaction(UUID transactionId) throws TransactionNotFound, WalletInvalid, InsuffecientFundsException
+		{
+			
+			Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
+			if( null == transaction)
+			{
+				throw new TransactionNotFound("Transaction not found.");
+			}
+			Wallet senderWallet = transaction.getWallet();
+			Wallet recipientWallet = walletRepository.findById(transaction.getSendorWalletID()).orElse(null);
+			if(recipientWallet == null) {
+				throw new WalletInvalid("Wallet missing");
+			}
+			deductFromWallet(senderWallet, recipientWallet, transaction.getAmount(),true);
+			
+			addToWallet(recipientWallet, senderWallet, transaction.getAmount());
+			
+			
+			
+		}
+		
 		private boolean transferToWallet(Wallet senderWallet, Wallet recipientWallet, BigDecimal amount) throws WalletInvalid ,InsuffecientFundsException {
 			if(senderWallet == null || recipientWallet == null) {
 				throw new WalletInvalid();
 			}
 			
-			deductFromWallet(senderWallet, recipientWallet, amount);
+			deductFromWallet(senderWallet, recipientWallet, amount,false);
 			
 			addToWallet(recipientWallet, senderWallet, amount);
 			
@@ -123,15 +144,18 @@ public class TransactionService {
 			return true;								
 		}
 		
-		private boolean deductFromWallet(Wallet wallet, Wallet sendorWallet, BigDecimal amount) throws WalletInvalid, InsuffecientFundsException {
+		private boolean deductFromWallet(Wallet wallet, Wallet sendorWallet, BigDecimal amount,boolean isReversal) throws WalletInvalid, InsuffecientFundsException {
 			if(wallet == null || sendorWallet == null) {
 				throw new WalletInvalid();
 			}
-			
+			BigDecimal finalAmountAfterCharges = amount;
+			if(!isReversal)
+			{
 			BigDecimal charge = calculateCharge(amount);
 			BigDecimal commission = calculateCommission(amount);
 			
-			BigDecimal finalAmountAfterCharges = amount.add(charge).add(commission);
+			 finalAmountAfterCharges = finalAmountAfterCharges.add(charge).add(commission);
+			}
 			
 			BigDecimal finalBalance = wallet.getBalance().subtract(finalAmountAfterCharges);
 			

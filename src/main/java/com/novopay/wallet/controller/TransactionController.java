@@ -74,21 +74,30 @@ public class TransactionController {
 		}
 	}
 	
-	@RequestMapping(value = "chargeandcommission", method = RequestMethod.POST)
+	@RequestMapping(value = "/chargeandcommission", method = RequestMethod.POST)
 	public String computeCommisionandCharges(@RequestParam("amount") BigDecimal amount)
 	{
 		 String commissionAndCharges = "Charge : "+transactionService.calculateCharge(amount)+" Commission: "+transactionService.calculateCommission(amount);
 		 return commissionAndCharges;
 	}
 	
-	@RequestMapping(value = "status",method = RequestMethod.POST)
-	public String  transactionStatus(@RequestParam("email") String email,@RequestParam("pwd") String password, @RequestParam("transactionId") UUID transactionId)
+	@RequestMapping(value = "/status",method = RequestMethod.POST)
+	public String  transactionStatus(@RequestParam("email") String email,@RequestParam("pwd") String password, @RequestParam("transactionId") String transactionId)
 	{
 		String status="";
 		
+		
+		UUID id;
+		try {
+			id = UUID.fromString(transactionId);
+		}
+		catch(IllegalArgumentException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction Id is not valid.");
+		}
+		
 		if (userLoginService.checkLogin(email, password)) {
 			try {
-				transactionService.checkTransactionStatus(transactionId);
+				status=transactionService.checkTransactionStatus(id);
 			}
 			catch(TransactionNotFound e)
 			{
@@ -98,5 +107,36 @@ public class TransactionController {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password invalid.");
 		}
 		return status;
+	}
+	
+	@RequestMapping(value="/reverseTransaction" , method = RequestMethod.POST)
+	public void reverseTransaction(@RequestParam("email") String email,@RequestParam("pwd") String password, @RequestParam("transactionId") String transactionId) throws WalletInvalid, InsuffecientFundsException
+	{
+		
+		UUID id;
+		try {
+			id = UUID.fromString(transactionId);
+		}
+		catch(IllegalArgumentException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Transaction Id is not valid.");
+		}
+		
+		if (userLoginService.checkLogin(email, password)) {
+			try {
+				transactionService.RevertTransaction(id);
+			}
+			catch(TransactionNotFound e)
+			{
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found", e);
+			}
+			catch(WalletInvalid e)
+			{
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Wallet not found", e);
+			}
+		} else {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password invalid.");
+		}
+		
+		
 	}
 }
