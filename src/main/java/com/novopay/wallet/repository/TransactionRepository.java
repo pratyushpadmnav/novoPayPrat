@@ -9,8 +9,9 @@ import org.springframework.data.repository.CrudRepository;
 
 import com.novopay.wallet.model.Transaction;
 import com.novopay.wallet.model.UserAccount;
+import com.novopay.wallet.model.Wallet;
 
 public interface TransactionRepository extends CrudRepository<Transaction, UUID>{
-	public List<Transaction> findAllByWalletId(UUID walletId,Sort sort);
+	public List<Transaction> findAllByWallet(Wallet wallet,Sort sort);
 
 }

@@ -18,8 +18,8 @@ public class UserLoginCredential {
 		@Column(name = "USERUUID", nullable = false, unique = true, updatable = false)
 		private UUID useruuid;
 		
-		@Column(name = "USERNAME", nullable = false, unique = true, updatable = false, length = 60)
-		private String username;
+		@Column(name = "EMAIL", nullable = false, unique = true, updatable = false, length = 60)
+		private String email;
 		
 		@Column(name = "PASSWORD", length = 12, nullable = true, updatable = true)
 		private String password;
@@ -30,9 +30,9 @@ public class UserLoginCredential {
 			super();
 		}
 
-		public UserLoginCredential(UUID useruuid, String username, String password) {
+		public UserLoginCredential(UUID useruuid, String email, String password) {
 			this.useruuid = useruuid;
-			this.username = username;
+			this.email = email;
 			this.password = password;
 		}
 
@@ -40,8 +40,8 @@ public class UserLoginCredential {
 			return useruuid;
 		}
 
-		public String getUsername() {
-			return username;
+		public String getEmail() {
+			return email;
 		}
 
 		public String getPassword() {

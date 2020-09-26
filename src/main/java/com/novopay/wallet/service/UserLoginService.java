@@ -43,7 +43,7 @@ public class UserLoginService {
 		
 		public boolean checkLogin(String userName,String password)
 		{
-			if(loginDetailRepository.findByEmail(userName, password).orElse(null) != null)
+			if(loginDetailRepository.findByEmailAndPassword(userName, password).orElse(null) != null)
 			{
 				return true;
 			}

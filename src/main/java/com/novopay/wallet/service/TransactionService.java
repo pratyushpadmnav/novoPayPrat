@@ -111,7 +111,7 @@ public class TransactionService {
 			{
 				throw new UserNotFoundException("User Not Found");
 			}
-			List<Transaction> passBook = transactionRepository.findAllByWalletId(userAccount.getWallet().getWalletId(),Sort.by(Sort.Direction.DESC, "timeOfTransaction"));
+			List<Transaction> passBook = transactionRepository.findAllByWallet(userAccount.getWallet(),Sort.by(Sort.Direction.DESC, "timeOfTransaction"));
 			return passBook;
 		}
 		
