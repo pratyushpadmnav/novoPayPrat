@@ -2,6 +2,7 @@ package com.novopay.wallet.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import javax.transaction.Transactional;
 
@@ -9,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.novopay.wallet.Exceptions.InsuffecientFundsException;
+import com.novopay.wallet.Exceptions.TransactionNotFound;
 import com.novopay.wallet.Exceptions.UserNotFoundException;
 import com.novopay.wallet.Exceptions.WalletInvalid;
 import com.novopay.wallet.model.Transaction;
@@ -66,6 +68,17 @@ public class TransactionService {
 			}
 			
 			return transferToWallet(sender.getWallet(), recipient.getWallet(), amount);
+		}
+		
+		public String checkTransactionStatus(UUID transactionId) throws TransactionNotFound
+		{
+			Transaction transaction = transactionRepository.findById(transactionId).orElse(null);
+			if( null == transaction)
+			{
+				throw new TransactionNotFound("Transaction not found.");
+			}
+			
+			return transaction.getStatus();
 		}
 		
 		private boolean transferToWallet(Wallet senderWallet, Wallet recipientWallet, BigDecimal amount) throws WalletInvalid ,InsuffecientFundsException {

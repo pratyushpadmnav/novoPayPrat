@@ -1,5 +1,6 @@
 package com.novopay.wallet.controller;
 import java.math.BigDecimal;
+import java.util.UUID;
 
 import javax.validation.Valid;
 
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.novopay.wallet.Exceptions.InsuffecientFundsException;
+import com.novopay.wallet.Exceptions.TransactionNotFound;
 import com.novopay.wallet.Exceptions.UserNotFoundException;
 import com.novopay.wallet.Exceptions.WalletInvalid;
 import com.novopay.wallet.payload.TransactionPayLoad;
@@ -78,5 +80,23 @@ public class TransactionController {
 		 String commissionAndCharges = "Charge : "+transactionService.calculateCharge(amount)+" Commission: "+transactionService.calculateCommission(amount);
 		 return commissionAndCharges;
 	}
-
+	
+	@RequestMapping(value = "status",method = RequestMethod.POST)
+	public String  transactionStatus(@RequestParam("email") String email,@RequestParam("pwd") String password, @RequestParam("transactionId") UUID transactionId)
+	{
+		String status="";
+		
+		if (userLoginService.checkLogin(email, password)) {
+			try {
+				transactionService.checkTransactionStatus(transactionId);
+			}
+			catch(TransactionNotFound e)
+			{
+				throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Transaction not found", e);
+			}
+		} else {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Username or password invalid.");
+		}
+		return status;
+	}
 }
