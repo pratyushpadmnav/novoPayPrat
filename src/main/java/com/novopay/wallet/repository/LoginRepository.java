@@ -11,7 +11,7 @@ import com.novopay.wallet.model.UserAccount;
 
 @Repository
 public interface LoginRepository extends CrudRepository<UserAccount, UUID>{
-	public Optional<User> findByUsername(String username);
+	public Optional<User> findByEmail(String username);
 }
 
 

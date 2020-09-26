@@ -8,7 +8,7 @@ import org.springframework.data.repository.CrudRepository;
 import com.novopay.wallet.model.UserLoginCredential;
 
 public interface LoginDetailRepository extends CrudRepository<UserLoginCredential, UUID> {
-	public Optional<UserLoginCredential> findByUsernameAndPassword(String username, String password);
+	public Optional<UserLoginCredential> findByEmail(String username, String password);
 
 }
 

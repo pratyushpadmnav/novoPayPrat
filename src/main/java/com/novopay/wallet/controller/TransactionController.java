@@ -8,28 +8,29 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.novopay.wallet.payload.UserSignUpPayLoad;
+import com.novopay.wallet.service.TransactionService;
 import com.novopay.wallet.service.UserLoginService;
 
 
 
 @RestController
-@RequestMapping(UserLoginController.API)
-public class UserLoginController {
-	public static final String API = "/wallet/api/v1/user";
+@RequestMapping(TransactionController.API)
+public class TransactionController {
+	public static final String API = "/wallet/api/v1/transact";
 	
 	
-	public UserLoginService userLoginService;
+	public TransactionService transactionService;
 	
 	@Autowired
-	UserLoginController(UserLoginService userLoginService)
+	TransactionController(TransactionService transactionService)
 	{
-		this.userLoginService = userLoginService;
-	}
+		this.transactionService = transactionService;
+	} 
 	
 	
-	@RequestMapping(value = "/signup", method = RequestMethod.POST)
+	@RequestMapping(value = "/addMoney", method = RequestMethod.POST)
 	public void adduser(@Valid @RequestBody UserSignUpPayLoad userSignUpPayLoad) {
-		userLoginService.signUpUser(userSignUpPayLoad);
+		transactionService.signUpUser(userSignUpPayLoad);
 	}
 
 }
