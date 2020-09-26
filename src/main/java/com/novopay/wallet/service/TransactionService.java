@@ -147,11 +147,11 @@ public class TransactionService {
 			return true;								
 		}
 		
-		private BigDecimal calculateCharge(BigDecimal amount) {
+		public BigDecimal calculateCharge(BigDecimal amount) {
 			return amount.multiply(charge).divide(new BigDecimal(100.00));
 		}
 		
-		private BigDecimal calculateCommission(BigDecimal amount) {
+		public BigDecimal calculateCommission(BigDecimal amount) {
 			return amount.multiply(commission).divide(new BigDecimal(100.00));
 		}
 
