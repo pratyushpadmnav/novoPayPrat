@@ -40,5 +40,17 @@ public class UserLoginService {
 			UserAccount newUser = loginRepository.save(userAccount);
 			loginDetailRepository.save(new UserLoginCredential(newUser.getUserId(), newUser.getEmail(), userSignUpPayLoad.getPassword()));
 		}
+		
+		public boolean checkLogin(String userName,String password)
+		{
+			if(loginDetailRepository.findByEmail(userName, password).orElse(null) != null)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 
 }

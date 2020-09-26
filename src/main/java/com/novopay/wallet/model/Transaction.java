@@ -20,25 +20,25 @@ public class Transaction {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "TRANSACTIONID", nullable = false, unique = true, updatable = false)
-	private UUID transactionid;
+	private UUID id;
 	
 	@Column(name = "TRANSACTIONAMOUNT", precision = 15, scale = 4, nullable = false, updatable = false)
-	private BigDecimal transactionAmount;
+	private BigDecimal amount;
 	
 	@Column(name = "TRANSACTIONTYPE", nullable = false, updatable = false)
-	private String transactionType;
+	private String type;
 	
 	@Column(name = "TRANSACTIONSTATUS", nullable = false, updatable = false)
-	private String transactionStatus;
+	private String status;
 	
 	@Column(name = "TIMEOFTRANSACTION", columnDefinition =  "TIMESTAMP", nullable = false, updatable = false)
 	private LocalDateTime timeOfTransaction;
 	
 	@Column(name = "TRANSACTIONCHARGE", precision = 15, scale = 4, nullable = false, updatable = false)
-	private BigDecimal transactionCharge;
+	private BigDecimal charge;
 	
 	@Column(name = "TRANSACTIONCOMMISION", precision = 15, scale = 4, nullable = false, updatable = false)
-	private BigDecimal transactionCommision;
+	private BigDecimal commision;
 	
 	
 	
@@ -48,50 +48,51 @@ public class Transaction {
 
 
 
-	public UUID getTransactionid() {
-		return transactionid;
+
+	public UUID getId() {
+		return id;
 	}
 
 
 
-	public void setTransactionid(UUID transactionid) {
-		this.transactionid = transactionid;
+	public void setId(UUID id) {
+		this.id = id;
 	}
 
 
 
-	public BigDecimal getTransactionAmount() {
-		return transactionAmount;
+	public BigDecimal getAmount() {
+		return amount;
 	}
 
 
 
-	public void setTransactionAmount(BigDecimal transactionAmount) {
-		this.transactionAmount = transactionAmount;
+	public void setAmount(BigDecimal amount) {
+		this.amount = amount;
 	}
 
 
 
-	public String getTransactionType() {
-		return transactionType;
+	public String getType() {
+		return type;
 	}
 
 
 
-	public void setTransactionType(String transactionType) {
-		this.transactionType = transactionType;
+	public void setType(String type) {
+		this.type = type;
 	}
 
 
 
-	public String getTransactionStatus() {
-		return transactionStatus;
+	public String getStatus() {
+		return status;
 	}
 
 
 
-	public void setTransactionStatus(String transactionStatus) {
-		this.transactionStatus = transactionStatus;
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 
@@ -108,26 +109,26 @@ public class Transaction {
 
 
 
-	public BigDecimal getTransactionCharge() {
-		return transactionCharge;
+	public BigDecimal getCharge() {
+		return charge;
 	}
 
 
 
-	public void setTransactionCharge(BigDecimal transactionCharge) {
-		this.transactionCharge = transactionCharge;
+	public void setCharge(BigDecimal charge) {
+		this.charge = charge;
 	}
 
 
 
-	public BigDecimal getTransactionCommision() {
-		return transactionCommision;
+	public BigDecimal getCommision() {
+		return commision;
 	}
 
 
 
-	public void setTransactionCommision(BigDecimal transactionCommision) {
-		this.transactionCommision = transactionCommision;
+	public void setCommision(BigDecimal commision) {
+		this.commision = commision;
 	}
 
 
